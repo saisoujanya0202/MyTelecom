@@ -13,12 +13,12 @@ public class UserService {
     @Autowired
     private UserRepository userRepository;
 
-    public void registerUser(MyTelecomUser myTelecomUser) {
+    public MyTelecomUser registerUser(MyTelecomUser myTelecomUser) {
         Optional<MyTelecomUser> user = userRepository.findById(myTelecomUser.getId());
         if(user.isPresent()){
             throw new RuntimeException("User Id already exists!");
         }
-        userRepository.save(myTelecomUser);
+        return userRepository.save(myTelecomUser);
     }
 
     public MyTelecomUser getDetails(String id) {
