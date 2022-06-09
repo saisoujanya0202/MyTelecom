@@ -1,6 +1,7 @@
 package com.mytelecom.security;
 
 import com.mytelecom.repository.UserRepository;
+import com.mytelecom.repository.entity.MyTelecomUser;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.Ordered;
 import org.springframework.core.annotation.Order;
@@ -16,6 +17,7 @@ import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.util.Base64;
+import java.util.Optional;
 
 @Component
 @Order(Ordered.HIGHEST_PRECEDENCE)
@@ -31,7 +33,6 @@ public class AuthFilter extends GenericFilterBean {
         request.getHeaderNames().asIterator().forEachRemaining(System.out::println);
         if (request.getRequestURI() != null && !request.getRequestURI().contains("/user-registration")) {
             final String authorization = request.getHeader("Authorization");
-            System.out.println(authorization);
             if (authorization == null) {
                 throw new RuntimeException("User not authorized!");
             }
@@ -42,7 +43,10 @@ public class AuthFilter extends GenericFilterBean {
                 String credentials = new String(credDecoded, StandardCharsets.UTF_8);
                 // credentials = username:password
                 final String[] values = credentials.split(":", 2);
-                if(!repository.findById(values[0]).get().getPassword().equals(values[1])){
+                Optional<MyTelecomUser> optionalUser = repository.findById(values[0]);
+                if(optionalUser.isEmpty())
+                    throw new RuntimeException("User not registered");
+                if(!optionalUser.get().getPassword().equals(values[1])){
                     throw new RuntimeException("UserId/Password is wrong");
                 }
             }

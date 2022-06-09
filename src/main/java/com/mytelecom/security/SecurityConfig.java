@@ -12,7 +12,8 @@ import static org.springframework.security.config.Customizer.withDefaults;
 public class SecurityConfig {
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
-        http.authorizeHttpRequests(authz -> authz.anyRequest().authenticated()).httpBasic(withDefaults());
+        http.authorizeHttpRequests().anyRequest().permitAll();
         return http.build();
     }
-}*/
+}
+*/
