@@ -30,9 +30,9 @@ public class AuthFilter extends GenericFilterBean {
     public void doFilter(ServletRequest servletRequest, ServletResponse servletResponse, FilterChain filterChain) throws IOException, ServletException {
         HttpServletRequest request = (HttpServletRequest) servletRequest;
         HttpServletResponse response = (HttpServletResponse) servletResponse;
-        request.getHeaderNames().asIterator().forEachRemaining(System.out::println);
+        request.getHeaderNames().asIterator().forEachRemaining(h-> System.out.println(h+" : "+request.getHeader(h)));
         if (request.getRequestURI() != null && !request.getRequestURI().contains("/user-registration")) {
-            final String authorization = request.getHeader("Authorization");
+            final String authorization = request.getHeader("authorization");
             if (authorization == null) {
                 throw new RuntimeException("User not authorized!");
             }
