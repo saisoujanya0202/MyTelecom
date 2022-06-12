@@ -1,14 +1,15 @@
 package com.mytelecom.controller;
 
-import com.mytelecom.repository.entity.MyTelecomUser;
-import static java.lang.String.format;
-import com.mytelecom.service.UserService;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.*;
+import java.security.Principal;
 
-import javax.validation.Valid;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.RestController;
+
+import com.mytelecom.repository.entity.MyTelecomUser;
+import com.mytelecom.service.UserService;
 
 @RestController
 public class UserController {
@@ -16,14 +17,11 @@ public class UserController {
     @Autowired
     private UserService userService;
 
-    @PostMapping("/user-registration")
-    public ResponseEntity<String> registration(@RequestBody @Valid MyTelecomUser myTelecomUser) {
-    	MyTelecomUser savedUser = userService.registerUser(myTelecomUser);
-        return new ResponseEntity<String>(format("User %s created successfully", savedUser.getId()), HttpStatus.CREATED);
-    }
-
     @GetMapping("/users/{id}")
-    public MyTelecomUser getDetails(@PathVariable String id){
-        return userService.getDetails(id);
+    public MyTelecomUser getDetails(@PathVariable String id, Principal principal){
+    	if(id!=null && id.equalsIgnoreCase(principal.getName()))
+        	return userService.getDetails(id);
+        else
+        	throw new RuntimeException("You are not authorized to view this data");
     }
 }
